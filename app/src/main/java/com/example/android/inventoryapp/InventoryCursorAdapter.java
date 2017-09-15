@@ -81,14 +81,14 @@ public class InventoryCursorAdapter extends CursorAdapter {
         if (TextUtils.isEmpty(inventoryName)) {
             inventoryName = context.getString(R.string.name_specify);
         }
-        if (TextUtils.isEmpty(inventoryImage)) {
-            inventoryImage = context.getString(R.string.name_specify);
-        }
-        
+
+
+
         // Update the TextViews with the attributes for the current inventory item
         nameTextView.setText(inventoryName);
 
         imageView.setImageURI(Uri.parse(inventoryImage));
+      //  imageView.setImageURI(Uri.parse(cursor.getString(cursor.getColumnIndex(InventoryContract.InventoryEntry.COLUMN_SHOES_IMAGE))));
 
         //Subtract one when the sale button is clicked
         Button saleButton = (Button) view.findViewById(R.id.sale_button);
