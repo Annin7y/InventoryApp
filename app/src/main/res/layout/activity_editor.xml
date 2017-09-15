@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/activity_margin"
+        android:weightSum="1"
+        tools:context=".EditorActivity">
+
+        <TextView
+            android:id="@+id/textCartView"
+            style="@style/CategoryStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="165dp"
+            android:text="@string/shopping_cart" />
+
+        <EditText
+            android:id="@+id/edit_name"
+            style="@style/EditorFieldStyle"
+            android:layout_below="@+id/textCartView"
+            android:hint="@string/style"
+            android:inputType="textCapWords" />
+
+        <EditText
+            android:id="@+id/edit_brand_name"
+            style="@style/EditorFieldStyle"
+            android:layout_below="@+id/edit_name"
+            android:hint="@string/brand"
+            android:inputType="textCapWords" />
+
+        <TextView
+            android:id="@+id/size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/edit_brand_name"
+            android:layout_marginStart="14dp"
+            android:fontFamily="sans-serif-light"
+            android:hint="@string/size"
+            android:inputType="number"
+            android:paddingTop="20dp"
+            android:textAppearance="?android:textAppearanceMedium" />
+
+        <!-- Size drop-down spinner -->
+        <Spinner
+            android:id="@+id/spinner_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/edit_brand_name"
+            android:layout_marginStart="65dp"
+            android:layout_toRightOf="@+id/size"
+            android:paddingTop="20dp"
+            android:spinnerMode="dropdown" />
+
+        <EditText
+            android:id="@+id/edit_price_name"
+            style="@style/EditorFieldStyle"
+            android:layout_below="@+id/size"
+            android:hint="@string/price"
+            android:inputType="numberDecimal" />
+
+        <EditText
+            android:id="@+id/edit_quantity_name"
+            style="@style/EditorFieldStyle"
+            android:layout_below="@+id/edit_price_name"
+            android:hint="@string/quantity"
+            android:inputType="number" />
+
+        <Button
+            android:id="@+id/image_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/edit_quantity_name"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="30dp"
+            android:focusable="false"
+            android:text="@string/add_an_image" />
+
+        <ImageView
+            android:id="@+id/image"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_below="@+id/image_button"
+            android:layout_marginBottom="12dp"
+            android:layout_marginTop="12dp"
+            android:scaleType="centerCrop" />
+
+        <TextView
+            android:id="@+id/image_uri"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/image" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_below="@+id/image" >
+
+        <Button
+            android:id="@+id/order_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:focusable="false"
+            android:text="@string/order_more" />
+
+        <Button
+            android:id="@+id/receive_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:layout_toRightOf="@+id/order_button"
+            android:focusable="false"
+            android:text="@string/receive" />
+
+        <Button
+            android:id="@+id/sell_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:layout_toRightOf="@+id/receive_button"
+            android:focusable="false"
+            android:text="@string/sale" />
+
+    </LinearLayout>
+
+    </RelativeLayout>
+</ScrollView>
+

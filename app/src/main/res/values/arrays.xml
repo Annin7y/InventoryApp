@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- These are the options displayed in the size drop-down Spinner -->
+    <string-array name="array_size_options">
+        <item>@string/size_unknown</item>
+        <item>@string/size_five</item>
+        <item>@string/size_six</item>
+        <item>@string/size_seven</item>
+        <item>@string/size_eight</item>
+        <item>@string/size_nine</item>
+        <item>@string/size_ten</item>
+        <item>@string/size_eleven</item>
+        <item>@string/size_twelve</item>
+    </string-array>
+
+</resources>
