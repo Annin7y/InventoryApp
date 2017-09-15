@@ -57,7 +57,7 @@ public class InventoryCursorAdapter extends CursorAdapter {
         TextView nameTextView = (TextView) view.findViewById(R.id.name);
         final TextView quantityTextView = (TextView) view.findViewById(R.id.quantity);
         TextView priceTextView = (TextView) view.findViewById(R.id.price);
-        ImageView imageView = (ImageView) view.findViewById(R.id.image);
+        ImageView imageView = (ImageView) view.findViewById(R.id.list_item_image);
 
         // Find the columns of inventory attributes that we're interested in
         int nameColumnIndex = cursor.getColumnIndex(InventoryContract.InventoryEntry.COLUMN_SHOES_NAME);
