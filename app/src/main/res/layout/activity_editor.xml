@@ -9,7 +9,7 @@
         android:layout_height="match_parent"
         android:padding="@dimen/activity_margin"
         android:weightSum="1"
-        tools:context=".EditorActivity">
+        tools:context=".ui.EditorActivity">
 
         <TextView
             android:id="@+id/textCartView"

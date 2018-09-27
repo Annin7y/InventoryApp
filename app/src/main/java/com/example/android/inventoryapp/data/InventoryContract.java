@@ -8,11 +8,13 @@ import android.provider.BaseColumns;
  * Created by Maino96-10022 on 12/15/2016.
  */
 
-public class InventoryContract {
-
-    // To prevent someone from accidentally instantiating the contract class,
-    // give it an empty constructor.
-    private InventoryContract() {
+public class InventoryContract
+{
+    /** To prevent someone from accidentally instantiating the contract class,
+        give it an empty constructor.
+     */
+    private InventoryContract()
+    {
     }
 
     /**
@@ -38,8 +40,8 @@ public class InventoryContract {
      * Inner class that defines constant values for the shoes database table.
      * Each entry in the table represents a single pair of shoes.
      */
-    public static final class InventoryEntry implements BaseColumns {
-
+    public static final class InventoryEntry implements BaseColumns
+    {
         /**
          * To make this a usable URI, we use the parse method which takes in a URI string and returns a Uri.
          */
@@ -56,6 +58,7 @@ public class InventoryContract {
          */
         public static final String CONTENT_ITEM_TYPE =
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_SHOES;
+
         /**
          * Name of database table for shoes
          */
@@ -110,9 +113,11 @@ public class InventoryContract {
         public static final int SIZE_ELEVEN = 7;
         public static final int SIZE_TWELVE = 8;
 
-        public static boolean isValidSize(int size) {
+        public static boolean isValidSize(int size)
+        {
             if (size == SIZE_UNKNOWN || size == SIZE_FIVE || size == SIZE_SIX || size == SIZE_SEVEN || size == SIZE_EIGHT ||
-                    size == SIZE_NINE || size == SIZE_TEN || size == SIZE_ELEVEN || size == SIZE_TWELVE) {
+                    size == SIZE_NINE || size == SIZE_TEN || size == SIZE_ELEVEN || size == SIZE_TWELVE)
+            {
                 return true;
             }
             return false;

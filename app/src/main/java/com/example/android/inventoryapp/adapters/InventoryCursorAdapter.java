@@ -1,4 +1,4 @@
-package com.example.android.inventoryapp;
+package com.example.android.inventoryapp.adapters;
 
 
 import android.content.ContentResolver;
@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.android.inventoryapp.R;
 import com.example.android.inventoryapp.data.InventoryContract;
 import com.example.android.inventoryapp.data.InventoryContract.InventoryEntry;
 
@@ -27,9 +28,10 @@ import static com.example.android.inventoryapp.R.string.sale;
  * Created by Maino96-10022 on 12/22/2016.
  */
 
-public class InventoryCursorAdapter extends CursorAdapter {
-
-    public InventoryCursorAdapter(Context context, Cursor c) {
+public class InventoryCursorAdapter extends CursorAdapter
+{
+    public InventoryCursorAdapter(Context context, Cursor c)
+    {
         super(context, c, 0 /* flags */);
     }
 
@@ -43,14 +45,15 @@ public class InventoryCursorAdapter extends CursorAdapter {
      * @return the newly created list item view.
      */
     @Override
-    public View newView(Context context, Cursor cursor, ViewGroup parent) {
+    public View newView(Context context, Cursor cursor, ViewGroup parent)
+    {
         // Inflate a list item view using the layout specified in list_item.xml
         return LayoutInflater.from(context).inflate(R.layout.list_item, parent, false);
     }
 
     @Override
-    public void bindView(View view, final Context context, Cursor cursor) {
-
+    public void bindView(View view, final Context context, Cursor cursor)
+    {
         final int itemInventoryId = cursor.getInt(cursor.getColumnIndexOrThrow(InventoryContract.InventoryEntry._ID));
 
         // Find individual views that we want to modify in the list item layout
@@ -76,29 +79,32 @@ public class InventoryCursorAdapter extends CursorAdapter {
         quantityTextView.setText(inventoryQuantity);
         priceTextView.setText(inventoryPrice);
 
-        // If the inventory style is empty string or null, then use some default text
-        // that says "Style not specified", so the TextView isn't blank.
-        if (TextUtils.isEmpty(inventoryName)) {
+         // If the inventory style is empty string or null, then use some default text
+         // that says "Style not specified", so the TextView isn't blank.
+        if (TextUtils.isEmpty(inventoryName))
+        {
             inventoryName = context.getString(R.string.name_specify);
         }
 
-
+        if (inventoryImage != null)
+        {
+            imageView.setImageURI(Uri.parse(inventoryImage));
+        }
 
         // Update the TextViews with the attributes for the current inventory item
         nameTextView.setText(inventoryName);
 
-        imageView.setImageURI(Uri.parse(inventoryImage));
-      //  imageView.setImageURI(Uri.parse(cursor.getString(cursor.getColumnIndex(InventoryContract.InventoryEntry.COLUMN_SHOES_IMAGE))));
-
         //Subtract one when the sale button is clicked
         Button saleButton = (Button) view.findViewById(R.id.sale_button);
-        saleButton.setOnClickListener(new View.OnClickListener() {
+        saleButton.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View view) {
-
+            public void onClick(View view)
+            {
                 int quantitySell = Integer.parseInt(quantityTextView.getText().toString());
 
-                if (quantitySell > 0) {
+                if (quantitySell > 0)
+                {
                     quantitySell--;
 
                     ContentValues values = new ContentValues();
@@ -107,8 +113,9 @@ public class InventoryCursorAdapter extends CursorAdapter {
                     ContentResolver resolver = view.getContext().getContentResolver();
                     Uri uri = ContentUris.withAppendedId(InventoryContract.InventoryEntry.CONTENT_URI, itemInventoryId);
                     resolver.update(uri, values, null, null);
-
-                } else {
+                }
+                else
+                    {
                     Toast.makeText(context, "No quantity for sale. Please order more!",
                             Toast.LENGTH_SHORT).show();
                 }

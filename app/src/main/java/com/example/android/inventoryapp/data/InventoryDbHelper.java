@@ -10,8 +10,11 @@ import com.example.android.inventoryapp.data.InventoryContract.InventoryEntry;
  * Created by Maino96-10022 on 12/15/2016.
  */
 
-public class InventoryDbHelper extends SQLiteOpenHelper {
-
+public class InventoryDbHelper extends SQLiteOpenHelper
+{
+    /**
+     * Tag for the log messages
+     */
     public static final String LOG_TAG = InventoryDbHelper.class.getSimpleName();
 
     /**
@@ -29,7 +32,8 @@ public class InventoryDbHelper extends SQLiteOpenHelper {
      *
      * @param context of the app
      */
-    public InventoryDbHelper(Context context) {
+    public InventoryDbHelper(Context context)
+    {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
@@ -37,7 +41,8 @@ public class InventoryDbHelper extends SQLiteOpenHelper {
      * This is called when the database is created for the first time.
      */
     @Override
-    public void onCreate(SQLiteDatabase db) {
+    public void onCreate(SQLiteDatabase db)
+    {
         // Create a String that contains the SQL statement to create the shoes table
         String SQL_CREATE_SHOES_TABLE = "CREATE TABLE " + InventoryEntry.TABLE_NAME + " ("
                 + InventoryEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -53,7 +58,8 @@ public class InventoryDbHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
+    {
         db.execSQL("DROP TABLE IF EXISTS " + InventoryEntry.TABLE_NAME);
         onCreate(db);
     }

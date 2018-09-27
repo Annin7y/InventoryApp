@@ -1,4 +1,4 @@
-package com.example.android.inventoryapp;
+package com.example.android.inventoryapp.ui;
 
 import android.app.LoaderManager;
 import android.content.ContentUris;
@@ -18,12 +18,15 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.example.android.inventoryapp.adapters.InventoryCursorAdapter;
+import com.example.android.inventoryapp.R;
 import com.example.android.inventoryapp.data.InventoryContract;
 import com.example.android.inventoryapp.data.InventoryContract.InventoryEntry;
 
 
 public class MainActivity extends AppCompatActivity implements
-        LoaderManager.LoaderCallbacks<Cursor> {
+        LoaderManager.LoaderCallbacks<Cursor>
+{
 
     /**
      * Identifier for the inventory data loader
@@ -36,13 +39,15 @@ public class MainActivity extends AppCompatActivity implements
     InventoryCursorAdapter mCursorAdapter;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         // Setup FAB to open EditorActivity
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        fab.setOnClickListener(new View.OnClickListener()
+        {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, EditorActivity.class);
@@ -57,16 +62,18 @@ public class MainActivity extends AppCompatActivity implements
         View emptyView = findViewById(R.id.empty_view);
         inventoryListView.setEmptyView(emptyView);
 
-        // Setup an Adapter to create a list item for each row of inventory data in the Cursor.
-        // There is no inventory data yet (until the loader finishes) so pass in null for the Cursor.
+        /** Setup an Adapter to create a list item for each row of inventory data in the Cursor.
+        * There is no inventory data yet (until the loader finishes) so pass in null for the Cursor.
+         */
         mCursorAdapter = new InventoryCursorAdapter(this, null);
         inventoryListView.setAdapter(mCursorAdapter);
 
         // Setup the item click listener
-        inventoryListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        inventoryListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id)
+            {
                 // Create new intent to go to {@link EditorActivity}
                 Intent intent = new Intent(MainActivity.this, EditorActivity.class);
 
@@ -87,10 +94,10 @@ public class MainActivity extends AppCompatActivity implements
     /**
      * Helper method to insert hardcoded pet data into the database. For debugging purposes only.
      */
-    private void insertInventory() {
+    private void insertInventory()
+    {
         // Create a ContentValues object where column names are the keys,
         // and Gap shoes attributes are the values.
-
         ContentValues values = new ContentValues();
         values.put(InventoryEntry.COLUMN_SHOES_NAME, "Sandals");
         values.put(InventoryEntry.COLUMN_SHOES_BRAND, "Gap");
@@ -98,20 +105,21 @@ public class MainActivity extends AppCompatActivity implements
         values.put(InventoryEntry.COLUMN_SHOES_PRICE, 79.99);
         values.put(InventoryEntry.COLUMN_SHOES_QUANTITY, 7);
 
-
         Uri newUri = getContentResolver().insert(InventoryEntry.CONTENT_URI, values);
     }
 
     /**
      * Helper method to delete the inventory in the database.
      */
-    private void deleteAllInventory() {
+    private void deleteAllInventory()
+    {
         int rowsDeleted = getContentResolver().delete(InventoryEntry.CONTENT_URI, null, null);
         Log.v("CatalogActivity", rowsDeleted + " rows deleted from inventory database");
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
         // Inflate the menu options from the res/menu/menu_catalog.xml file.
         // This adds menu items to the app bar.
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -119,9 +127,11 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
         // User clicked on a menu option in the app bar overflow menu
-        switch (item.getItemId()) {
+        switch (item.getItemId())
+        {
             // Respond to a click on the "Insert dummy data" menu option
             case R.id.action_insert_dummy_data:
                 insertInventory();
@@ -135,10 +145,11 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-
+    public Loader<Cursor> onCreateLoader(int i, Bundle bundle)
+    {
         // Define a projection that specifies the columns from the table we care about.
-        String[] projection = {
+        String[] projection =
+                {
                 InventoryContract.InventoryEntry._ID,
                 InventoryContract.InventoryEntry.COLUMN_SHOES_NAME,
                 InventoryEntry.COLUMN_SHOES_QUANTITY,
@@ -156,12 +167,14 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data)
+    {
         mCursorAdapter.swapCursor(data);
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
+    public void onLoaderReset(Loader<Cursor> loader)
+    {
         mCursorAdapter.swapCursor(null);
     }
 }

@@ -1,4 +1,4 @@
-package com.example.android.inventoryapp;
+package com.example.android.inventoryapp.ui;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -32,6 +32,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.android.inventoryapp.R;
 import com.example.android.inventoryapp.data.InventoryContract;
 import com.example.android.inventoryapp.data.InventoryContract.InventoryEntry;
 
@@ -39,7 +40,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static android.R.transition.move;
 import static com.example.android.inventoryapp.data.InventoryProvider.LOG_TAG;
 
 
@@ -48,25 +48,18 @@ import static com.example.android.inventoryapp.data.InventoryProvider.LOG_TAG;
  */
 
 public class EditorActivity extends AppCompatActivity implements
-        LoaderManager.LoaderCallbacks<Cursor> {
-
+        LoaderManager.LoaderCallbacks<Cursor>
+{
     /**
      * Identifier for the inventory data loader
      */
     private static final int EXISTING_INVENTORY_LOADER = 0;
-
     private static final int PICK_IMAGE_REQUEST = 0;
-
     private Uri mCurrentInventoryUri;
-
     public Uri mCurrentImageUri;
-
     Button orderButton;
-
     Button receiveButton;
-
     Button sellButton;
-
     Button imageButton;
 
     /**
@@ -93,16 +86,13 @@ public class EditorActivity extends AppCompatActivity implements
      * Spinner to enter the size
      */
     private Spinner mSizeSpinner;
-
     private ImageView mImageView;
-
     private TextView mImageUriText;
-
     private int mSize = InventoryContract.InventoryEntry.SIZE_UNKNOWN;
-
     private boolean mInventoryHasChanged = false;
 
-    private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
+    private View.OnTouchListener mTouchListener = new View.OnTouchListener()
+    {
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
             mInventoryHasChanged = true;
@@ -111,20 +101,16 @@ public class EditorActivity extends AppCompatActivity implements
     };
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_editor);
 
         orderButton = (Button) findViewById(R.id.order_button);
-
         receiveButton = (Button) findViewById(R.id.receive_button);
-
         sellButton = (Button) findViewById(R.id.sell_button);
-
         imageButton = (Button) findViewById(R.id.image_button);
-
         mImageView = (ImageView) findViewById(R.id.image);
-
         mImageUriText = (TextView) findViewById(R.id.image_uri);
 
         // Examine the intent that was used to launch this activity,
@@ -133,17 +119,18 @@ public class EditorActivity extends AppCompatActivity implements
         mCurrentInventoryUri = intent.getData();
 
         // If the intent DOES NOT contain an inventory content URI, then we know that we are
-        // creating a new inventory.
-        if (mCurrentInventoryUri == null) {
-
+        //  creating a new inventory.
+        if (mCurrentInventoryUri == null)
+        {
             // This is a new inventory, so change the app bar to say "Add Inventory"
             setTitle(getString(R.string.editor_activity_title_new_inventory));
 
             // Invalidate the options menu, so the "Delete" menu option can be hidden.
             // (It doesn't make sense to delete inventory that hasn't been created yet.)
             invalidateOptionsMenu();
-        } else {
-
+        }
+        else
+            {
             // Otherwise this is an existing inventory so change app bar to say "Edit Inventory"
             setTitle(getString(R.string.editor_activity_title_edit_inventory));
 
@@ -151,7 +138,6 @@ public class EditorActivity extends AppCompatActivity implements
             // and display the current values in the editor
             getLoaderManager().initLoader(EXISTING_INVENTORY_LOADER, null, this);
         }
-
 
 // Find all relevant views that we will need to read user input from
         mNameEditText = (EditText) findViewById(R.id.edit_name);
@@ -170,10 +156,11 @@ public class EditorActivity extends AppCompatActivity implements
 
         setupSpinner();
 
-        orderButton.setOnClickListener(new View.OnClickListener() {
+        orderButton.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View view) {
-
+            public void onClick(View view)
+            {
                 EditText nameField = mNameEditText;
                 String name = nameField.getText().toString();
 
@@ -191,26 +178,30 @@ public class EditorActivity extends AppCompatActivity implements
                 intent.putExtra(Intent.EXTRA_SUBJECT,
                         "Shoe order " + name);
                 intent.putExtra(Intent.EXTRA_TEXT, emailOrderSummary);
-                if (intent.resolveActivity(getPackageManager()) != null) {
+                if (intent.resolveActivity(getPackageManager()) != null)
+                {
                     startActivity(intent);
                 }
             }
         });
 
-        receiveButton.setOnClickListener(new View.OnClickListener() {
+        receiveButton.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View view) {
-
+            public void onClick(View view)
+            {
                 int quantityReceived = Integer.parseInt(mQuantityEditText.getText().toString());
 
-                if (quantityReceived >= 0) {
+                if (quantityReceived >= 0)
+                {
                     quantityReceived++;
                     ContentValues values = new ContentValues();
                     values.put(InventoryContract.InventoryEntry.COLUMN_SHOES_QUANTITY, quantityReceived);
 
                     int rowsAffected = getContentResolver().update(mCurrentInventoryUri, values, null, null);
 
-                    if (rowsAffected == 0) {
+                    if (rowsAffected == 0)
+                    {
                         // If no rows were affected, then there was an error with the update.
                         Toast.makeText(EditorActivity.this, getString(R.string.editor_insert_inventory_failed), Toast.LENGTH_SHORT).show();
                     }
@@ -218,38 +209,42 @@ public class EditorActivity extends AppCompatActivity implements
             }
         });
 
-        sellButton.setOnClickListener(new View.OnClickListener() {
+        sellButton.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View view) {
-
+            public void onClick(View view)
+            {
                 int quantitySold = Integer.parseInt(mQuantityEditText.getText().toString());
 
-                if (quantitySold > 0) {
+                if (quantitySold > 0)
+                {
                     quantitySold--;
                     ContentValues values = new ContentValues();
                     values.put(InventoryContract.InventoryEntry.COLUMN_SHOES_QUANTITY, quantitySold);
 
                     int rowsAffected = getContentResolver().update(mCurrentInventoryUri, values, null, null);
 
-                    if (rowsAffected == 0) {
+                    if (rowsAffected == 0)
+                    {
                         // If no rows were affected, then there was an error with the update.
                         Toast.makeText(EditorActivity.this, getString(R.string.editor_insert_inventory_failed), Toast.LENGTH_SHORT).show();
-
                     }
                 }
             }
         });
 
-
-        imageButton.setOnClickListener(new View.OnClickListener() {
+        imageButton.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
                 openImageSelector();
             }
         });
     }
 
-    private void setupSpinner() {
+    private void setupSpinner()
+    {
         // Create adapter for spinner. The list options are from the String array it will use
         // the spinner will use the default layout
         ArrayAdapter sizeSpinnerAdapter = ArrayAdapter.createFromResource(this,
@@ -262,28 +257,46 @@ public class EditorActivity extends AppCompatActivity implements
         mSizeSpinner.setAdapter(sizeSpinnerAdapter);
 
         // Set the integer mSelected to the constant values
-        mSizeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        mSizeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+        {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
+            {
                 String selection = (String) parent.getItemAtPosition(position);
-                if (!TextUtils.isEmpty(selection)) {
-                    if (selection.equals(getString(R.string.size_five))) {
+                if (!TextUtils.isEmpty(selection))
+                {
+                    if (selection.equals(getString(R.string.size_five)))
+                    {
                         mSize = InventoryEntry.SIZE_FIVE;
-                    } else if (selection.equals(getString(R.string.size_six))) {
+                    }
+                    else if (selection.equals(getString(R.string.size_six)))
+                    {
                         mSize = InventoryEntry.SIZE_SIX;
-                    } else if (selection.equals(getString(R.string.size_seven))) {
+                    }
+                    else if (selection.equals(getString(R.string.size_seven))) {
                         mSize = InventoryEntry.SIZE_SEVEN;
-                    } else if (selection.equals(getString(R.string.size_eight))) {
+                    }
+                    else if (selection.equals(getString(R.string.size_eight)))
+                    {
                         mSize = InventoryEntry.SIZE_EIGHT;
-                    } else if (selection.equals(getString(R.string.size_nine))) {
+                    }
+                    else if (selection.equals(getString(R.string.size_nine)))
+                    {
                         mSize = InventoryEntry.SIZE_NINE;
-                    } else if (selection.equals(getString(R.string.size_ten))) {
+                    }
+                    else if (selection.equals(getString(R.string.size_ten)))
+                    {
                         mSize = InventoryEntry.SIZE_TEN;
-                    } else if (selection.equals(getString(R.string.size_eleven))) {
+                    }
+                    else if (selection.equals(getString(R.string.size_eleven)))
+                    {
                         mSize = InventoryEntry.SIZE_ELEVEN;
-                    } else if (selection.equals(getString(R.string.size_twelve))) {
+                    }
+                    else if (selection.equals(getString(R.string.size_twelve)))
+                    {
                         mSize = InventoryEntry.SIZE_TWELVE;
-                    } else {
+                    }
+                    else {
                         mSize = InventoryEntry.SIZE_UNKNOWN;
                     }
                 }
@@ -291,7 +304,8 @@ public class EditorActivity extends AppCompatActivity implements
 
             // Because AdapterView is an abstract class, onNothingSelected must be defined
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
+            public void onNothingSelected(AdapterView<?> parent)
+            {
                 mSize = InventoryContract.InventoryEntry.SIZE_UNKNOWN;
             }
         });
@@ -300,17 +314,17 @@ public class EditorActivity extends AppCompatActivity implements
     /**
      * Get user input from editor and save inventory into database.
      */
-    public void saveInventory() {
-
-        // Read from input fields
-        // Use trim to eliminate leading or trailing white space
+    public void saveInventory()
+    {
+         // Read from input fields & use trim to eliminate leading or trailing white space
         String nameString = mNameEditText.getText().toString().trim();
         String brandString = mBrandEditText.getText().toString().trim();
         String priceString = mPriceEditText.getText().toString().trim();
         String quantityString = mQuantityEditText.getText().toString().trim();
 
         String imageString = "";
-        if (mCurrentImageUri != null) {
+        if (mCurrentImageUri != null)
+        {
             imageString = mCurrentImageUri.toString();
         }
 
@@ -320,7 +334,6 @@ public class EditorActivity extends AppCompatActivity implements
                         " Price " + priceString +
                         " Quantity " + quantityString +
                         "image string : " + imageString);
-
 
         // Check if this is supposed to be a new inventory item
         // and check if all the fields in the editor are blank
@@ -334,6 +347,7 @@ public class EditorActivity extends AppCompatActivity implements
             Toast.makeText(this, "Please fill all the entries.", Toast.LENGTH_SHORT).show();
             return;
         }
+
         // Create a ContentValues object where column names are the keys,
         // and inventory attributes from the editor are the values.
         ContentValues values = new ContentValues();
@@ -344,21 +358,26 @@ public class EditorActivity extends AppCompatActivity implements
         values.put(InventoryEntry.COLUMN_SHOES_SIZE, mSize);
         values.put(InventoryEntry.COLUMN_SHOES_IMAGE, imageString);
 
-        if (TextUtils.isEmpty(nameString)) {
+        if (TextUtils.isEmpty(nameString))
+        {
             Toast.makeText(this, getString(R.string.editor_insert_inventory_style),
                     Toast.LENGTH_SHORT).show();
         }
 
-        if (TextUtils.isEmpty(brandString)) {
+        if (TextUtils.isEmpty(brandString))
+        {
             Toast.makeText(this, getString(R.string.editor_insert_inventory_brand),
                     Toast.LENGTH_SHORT).show();
         }
 
         int quantity = 0;
-        if (TextUtils.isEmpty(quantityString) || quantityString.equals("0")) {
+        if (TextUtils.isEmpty(quantityString) || quantityString.equals("0"))
+        {
             Toast.makeText(this, getString(R.string.editor_insert_inventory_quantity),
                     Toast.LENGTH_SHORT).show();
-        } else {
+        }
+        else
+            {
             quantity = Integer.parseInt(quantityString);
         }
         values.put(InventoryEntry.COLUMN_SHOES_QUANTITY, quantity);
@@ -366,32 +385,40 @@ public class EditorActivity extends AppCompatActivity implements
         // If the price is not provided by the user, don't try to parse the string into an
         // integer value. Use 0 by default.
         double price = 0.0;
-        if (!TextUtils.isEmpty(priceString)) {
+        if (!TextUtils.isEmpty(priceString))
+        {
             price = Double.parseDouble(priceString);
-        } else {
+        }
+        else
+            {
             Toast.makeText(this, getString(R.string.editor_insert_inventory_price),
                     Toast.LENGTH_SHORT).show();
         }
         values.put(InventoryEntry.COLUMN_SHOES_PRICE, price);
 
         // Determine if this is a new or existing inventory by checking if mCurrentInventoryUri is null or not
-        if (mCurrentInventoryUri == null) {
-
+        if (mCurrentInventoryUri == null)
+        {
             // This is a NEW inventory item, so insert a new inventory item into the provider,
             // returning the content URI for the new inventory item.
             Uri newUri = getContentResolver().insert(InventoryEntry.CONTENT_URI, values);
 
             // Show a toast message depending on whether or not the insertion was successful.
-            if (newUri == null) {
+            if (newUri == null)
+            {
                 // If the new content URI is null, then there was an error with insertion.
                 Toast.makeText(this, getString(R.string.editor_insert_inventory_failed),
                         Toast.LENGTH_SHORT).show();
-            } else {
+            }
+            else
+                {
                 // Otherwise, the insertion was successful and we can display a toast.
                 Toast.makeText(this, getString(R.string.editor_insert_inventory_successful),
                         Toast.LENGTH_SHORT).show();
             }
-        } else {
+        }
+        else
+            {
             // Otherwise this is an EXISTING inventory item, so update the inventory with content URI: mCurrentInventoryUri
             // and pass in the new ContentValues. Pass in null for the selection and selection args
             // because mCurrentInventoryUri will already identify the correct row in the database that
@@ -399,11 +426,14 @@ public class EditorActivity extends AppCompatActivity implements
             int rowsAffected = getContentResolver().update(mCurrentInventoryUri, values, null, null);
 
             // Show a toast message depending on whether or not the update was successful.
-            if (rowsAffected == 0) {
+            if (rowsAffected == 0)
+            {
                 // If no rows were affected, then there was an error with the update.
                 Toast.makeText(this, getString(R.string.editor_update_inventory_failed),
                         Toast.LENGTH_SHORT).show();
-            } else {
+            }
+            else
+                {
                 // Otherwise, the update was successful and we can display a toast.
                 Toast.makeText(this, getString(R.string.editor_update_inventory_successful),
                         Toast.LENGTH_SHORT).show();
@@ -413,12 +443,16 @@ public class EditorActivity extends AppCompatActivity implements
         }
     }
 
-    public void openImageSelector() {
+    public void openImageSelector()
+    {
         Intent intent;
 
-        if (Build.VERSION.SDK_INT < 19) {
+        if (Build.VERSION.SDK_INT < 19)
+        {
             intent = new Intent(Intent.ACTION_GET_CONTENT);
-        } else {
+        }
+        else
+            {
             intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
             intent.addCategory(Intent.CATEGORY_OPENABLE);
         }
@@ -428,16 +462,16 @@ public class EditorActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+    public void onActivityResult(int requestCode, int resultCode, Intent resultData)
+    {
         // The ACTION_OPEN_DOCUMENT intent was sent with the request code READ_REQUEST_CODE.
         // If the request code seen here doesn't match, it's the response to some other intent,
         // and the below code shouldn't run at all.
-
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK) {
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK)
+        {
             // The document selected by the user won't be returned in the intent.
             // Instead, a URI to that document will be contained in the return intent
             // provided to this method as a parameter.  Pull that uri using "resultData.getData()"
-
             if (resultData != null) {
                 mCurrentImageUri = resultData.getData();
                 Log.i(LOG_TAG, "Uri: " + mCurrentImageUri.toString());
@@ -457,7 +491,8 @@ public class EditorActivity extends AppCompatActivity implements
         int targetH = mImageView.getHeight();
 
         InputStream input = null;
-        try {
+        try
+        {
             input = this.getContentResolver().openInputStream(uri);
 
             // Get the dimensions of the bitmap
@@ -482,23 +517,31 @@ public class EditorActivity extends AppCompatActivity implements
             input.close();
             return bitmap;
 
-        } catch (FileNotFoundException fne) {
+        }
+        catch (FileNotFoundException fne)
+        {
             Log.e(LOG_TAG, "Failed to load image.", fne);
             return null;
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             Log.e(LOG_TAG, "Failed to load image.", e);
             return null;
-        } finally {
-            try {
+        }
+        finally
+        {
+            try
+            {
                 input.close();
-            } catch (IOException ioe) {
-
+            } catch (IOException ioe)
+            {
             }
         }
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
         // Inflate the menu options from the res/menu/menu_editor.xml file.
         // This adds menu items to the app bar.
         getMenuInflater().inflate(R.menu.menu_editor, menu);
@@ -510,10 +553,12 @@ public class EditorActivity extends AppCompatActivity implements
      * menu can be updated (some menu items can be hidden or made visible).
      */
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
+    public boolean onPrepareOptionsMenu(Menu menu)
+    {
         super.onPrepareOptionsMenu(menu);
         // If this is a new inventory item, hide the "Delete" menu item.
-        if (mCurrentInventoryUri == null) {
+        if (mCurrentInventoryUri == null)
+        {
             MenuItem menuItem = menu.findItem(R.id.action_delete);
             menuItem.setVisible(false);
         }
@@ -521,7 +566,8 @@ public class EditorActivity extends AppCompatActivity implements
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
         // User clicked on a menu option in the app bar overflow menu
         switch (item.getItemId()) {
             // Respond to a click on the "Save" menu option
@@ -533,6 +579,7 @@ public class EditorActivity extends AppCompatActivity implements
                 // method to the bottom of the saveInventory() method. It will make the validation perfect.
                 finish();
                 return true;
+
             // Respond to a click on the "Delete" menu option
             case R.id.action_delete:
                 // Pop up confirmation dialog for deletion
@@ -542,7 +589,8 @@ public class EditorActivity extends AppCompatActivity implements
             case android.R.id.home:
                 // If inventory hasn't changed, continue with navigating up to parent activity
                 // which is the {@link CatalogActivity}.
-                if (!mInventoryHasChanged) {
+                if (!mInventoryHasChanged)
+                {
                     NavUtils.navigateUpFromSameTask(EditorActivity.this);
                     return true;
                 }
@@ -551,9 +599,11 @@ public class EditorActivity extends AppCompatActivity implements
                 // Create a click listener to handle the user confirming that
                 // changes should be discarded.
                 DialogInterface.OnClickListener discardButtonClickListener =
-                        new DialogInterface.OnClickListener() {
+                        new DialogInterface.OnClickListener()
+                        {
                             @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
+                            public void onClick(DialogInterface dialogInterface, int i)
+                            {
                                 // User clicked "Discard" button, navigate to parent activity.
                                 NavUtils.navigateUpFromSameTask(EditorActivity.this);
                             }
@@ -573,7 +623,8 @@ public class EditorActivity extends AppCompatActivity implements
     public void onBackPressed() {
 
         // If inventory hasn't changed, continue with handling back button press
-        if (!mInventoryHasChanged) {
+        if (!mInventoryHasChanged)
+        {
             super.onBackPressed();
             return;
         }
@@ -581,9 +632,11 @@ public class EditorActivity extends AppCompatActivity implements
         // Otherwise if there are unsaved changes, setup a dialog to warn the user.
         // Create a click listener to handle the user confirming that changes should be discarded.
         DialogInterface.OnClickListener discardButtonClickListener =
-                new DialogInterface.OnClickListener() {
+                new DialogInterface.OnClickListener()
+                {
                     @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
+                    public void onClick(DialogInterface dialogInterface, int i)
+                    {
                         // User clicked "Discard" button, close the current activity.
                         finish();
                     }
@@ -594,8 +647,8 @@ public class EditorActivity extends AppCompatActivity implements
     }
 
     @Override
-    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-
+    public Loader<Cursor> onCreateLoader(int i, Bundle bundle)
+    {
         // Since the editor shows all inventory attributes, define a projection that contains
         // all columns from the inventory table
         String[] projection = {
@@ -618,17 +671,18 @@ public class EditorActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor)
+    {
         // Bail early if the cursor is null or there is less than 1 row in the cursor
-        if (cursor == null || cursor.getCount() < 1) {
+        if (cursor == null || cursor.getCount() < 1)
+        {
             return;
         }
 
         // Proceed with moving to the first row of the cursor and reading data from it
         // (This should be the only row in the cursor)
-        if (cursor.moveToFirst()) {
-
+        if (cursor.moveToFirst())
+        {
             // Find the columns of inventory attributes that we're interested in
             int nameColumnIndex = cursor.getColumnIndex(InventoryEntry.COLUMN_SHOES_NAME);
             int brandColumnIndex = cursor.getColumnIndex(InventoryEntry.COLUMN_SHOES_BRAND);
@@ -653,9 +707,11 @@ public class EditorActivity extends AppCompatActivity implements
             mImageUriText.setText(image);
 
             ViewTreeObserver viewTreeObserver = mImageView.getViewTreeObserver();
-            viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener()
+            {
                 @Override
-                public void onGlobalLayout() {
+                public void onGlobalLayout()
+                {
                     mImageView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                     Uri mLoadImageUri = Uri.parse(mImageUriText.getText().toString());
                     mImageView.setImageBitmap(getBitmapFromUri(mLoadImageUri));
@@ -666,7 +722,8 @@ public class EditorActivity extends AppCompatActivity implements
             // Size is a dropdown spinner, so map the constant value from the database
             // into one of the dropdown options (0 is Unknown, 1 is Five... 8 is Twelve).
             // Then call setSelection() so that option is displayed on screen as the current selection.
-            switch (size) {
+            switch (size)
+            {
                 case InventoryEntry.SIZE_FIVE:
                     mSizeSpinner.setSelection(1);
                     break;
@@ -699,8 +756,8 @@ public class EditorActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-
+    public void onLoaderReset(Loader<Cursor> loader)
+    {
         // If the loader is invalidated, clear out all the data from the input fields.
         mNameEditText.setText("");
         mBrandEditText.setText("");
@@ -718,17 +775,21 @@ public class EditorActivity extends AppCompatActivity implements
      *                                   the user confirms they want to discard their changes
      */
     private void showUnsavedChangesDialog(
-            DialogInterface.OnClickListener discardButtonClickListener) {
+            DialogInterface.OnClickListener discardButtonClickListener)
+    {
         // Create an AlertDialog.Builder and set the message, and click listeners
         // for the positive and negative buttons on the dialog.
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.unsaved_changes_dialog_msg);
         builder.setPositiveButton(R.string.discard, discardButtonClickListener);
-        builder.setNegativeButton(R.string.keep_editing, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
+        builder.setNegativeButton(R.string.keep_editing, new DialogInterface.OnClickListener()
+        {
+            public void onClick(DialogInterface dialog, int id)
+            {
                 // User clicked the "Keep editing" button, so dismiss the dialog
                 // and continue editing the inventory item.
-                if (dialog != null) {
+                if (dialog != null)
+                {
                     dialog.dismiss();
                 }
             }
@@ -742,23 +803,28 @@ public class EditorActivity extends AppCompatActivity implements
     /**
      * Prompt the user to confirm that they want to delete this inventory item.
      */
-    private void showDeleteConfirmationDialog() {
-
+    private void showDeleteConfirmationDialog()
+    {
         // Create an AlertDialog.Builder and set the message, and click listeners
         // for the positive and negative buttons on the dialog.
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.delete_dialog_msg);
-        builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
+        builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener()
+        {
+            public void onClick(DialogInterface dialog, int id)
+            {
                 // User clicked the "Delete" button, so delete the inventory item.
                 deleteInventory();
             }
         });
-        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener()
+        {
+            public void onClick(DialogInterface dialog, int id)
+            {
                 // User clicked the "Cancel" button, so dismiss the dialog
                 // and continue editing the inventory item.
-                if (dialog != null) {
+                if (dialog != null)
+                {
                     dialog.dismiss();
                 }
             }
@@ -769,22 +835,25 @@ public class EditorActivity extends AppCompatActivity implements
         alertDialog.show();
     }
 
-    private void deleteInventory() {
-
+    private void deleteInventory()
+    {
         // Only perform the delete if this is an existing inventory item.
-        if (mCurrentInventoryUri != null) {
-
+        if (mCurrentInventoryUri != null)
+        {
             // Call the ContentResolver to delete the inventory item at the given content URI.
             // Pass in null for the selection and selection args because the mCurrentInventoryUri
             // content URI already identifies the inventory item that we want.
             int rowsDeleted = getContentResolver().delete(mCurrentInventoryUri, null, null);
 
             // Show a toast message depending on whether or not the delete was successful.
-            if (rowsDeleted == 0) {
+            if (rowsDeleted == 0)
+            {
                 // If no rows were deleted, then there was an error with the delete.
                 Toast.makeText(this, getString(R.string.editor_delete_inventory_failed),
                         Toast.LENGTH_SHORT).show();
-            } else {
+            }
+            else
+                {
                 // Otherwise, the delete was successful and we can display a toast.
                 Toast.makeText(this, getString(R.string.editor_delete_inventory_successful),
                         Toast.LENGTH_SHORT).show();

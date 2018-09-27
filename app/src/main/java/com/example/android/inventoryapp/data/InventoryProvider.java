@@ -15,8 +15,8 @@ import com.example.android.inventoryapp.data.InventoryContract.InventoryEntry;
  * Created by Maino96-10022 on 12/15/2016.
  */
 
-public class InventoryProvider extends ContentProvider {
-
+public class InventoryProvider extends ContentProvider
+{
     /**
      * Tag for the log messages
      */
@@ -40,11 +40,11 @@ public class InventoryProvider extends ContentProvider {
     private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
     // Static initializer. This is run the first time anything is called from this class.
-    static {
+    static
+    {
         // The calls to addURI() go here, for all of the content URI patterns that the provider
         // should recognize. All paths added to the UriMatcher have a corresponding code to return
         // when a match is found.
-
         sUriMatcher.addURI(InventoryContract.CONTENT_AUTHORITY, InventoryContract.PATH_SHOES, SHOES);
 
         // The content URI of the form "content://com.example.android.pets/pets/#" will map to the
@@ -60,15 +60,91 @@ public class InventoryProvider extends ContentProvider {
     private InventoryDbHelper mDbHelper;
 
     @Override
-    public boolean onCreate() {
+    public boolean onCreate()
+    {
+        // Complete onCreate() and initialize a MovieDbhelper on startup
+        // [Hint] Declare the DbHelper as a global variable
         mDbHelper = new InventoryDbHelper(getContext());
         return true;
     }
 
+    // Implement insert to handle requests to insert a single new row of data
+    @Override
+    public Uri insert(Uri uri, ContentValues contentValues) {
+        final int match = sUriMatcher.match(uri);
+        switch (match) {
+            case SHOES:
+                return insertInventory(uri, contentValues);
+            default:
+                throw new IllegalArgumentException("Insertion is not supported for " + uri);
+        }
+    }
+
+    /**
+     * Insert a pair of shoes into the database with the given content values. Return the new content URI
+     * for that specific row in the database.
+     */
+    private Uri insertInventory(Uri uri, ContentValues values)
+    {
+        // Check that the name is not null
+        String name = values.getAsString(InventoryEntry.COLUMN_SHOES_NAME);
+        if (name == null)
+        {
+            throw new IllegalArgumentException("Shoe name must be specified");
+        }
+
+        // Check that the brand is not null
+        String brand = values.getAsString(InventoryEntry.COLUMN_SHOES_BRAND);
+        if (brand == null)
+        {
+            throw new IllegalArgumentException("Shoe brand must be specified");
+        }
+
+        // Check that the price is not null
+        String price = values.getAsString(InventoryEntry.COLUMN_SHOES_PRICE);
+        if (price == null)
+        {
+            throw new IllegalArgumentException("Please specify the price");
+        }
+
+        // Check that the shoe size is valid
+        Integer size = values.getAsInteger(InventoryEntry.COLUMN_SHOES_SIZE);
+        if (size == null || !InventoryEntry.isValidSize(size))
+        {
+            throw new IllegalArgumentException("Please enter a size between 5 and 12");
+        }
+
+        // If quantity is provided, check that it's equal to at least 1
+        Integer quantity = values.getAsInteger(InventoryEntry.COLUMN_SHOES_QUANTITY);
+        if (quantity != null && quantity < 0)
+        {
+            throw new IllegalArgumentException("Please specify the quantity");
+        }
+
+        // Get a writable database
+        SQLiteDatabase database = mDbHelper.getWritableDatabase();
+
+        // Insert the new inventory with the given values
+        long id = database.insert(InventoryEntry.TABLE_NAME, null, values);
+        // If the ID is -1, then the insertion failed. Log an error and return null.
+        if (id == -1)
+        {
+            Log.e(LOG_TAG, "Failed to insert row for " + uri);
+            return null;
+        }
+
+        // Notify all listeners that the data has changed for the inventory content URI
+        getContext().getContentResolver().notifyChange(uri, null);
+
+        // Return the new URI with the ID (of the newly inserted row) appended at the end
+        return ContentUris.withAppendedId(uri, id);
+    }
+
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
-                        String sortOrder) {
-        // Get readable database
+                        String sortOrder)
+    {
+        // Get a readable database
         SQLiteDatabase database = mDbHelper.getReadableDatabase();
 
         // This cursor will hold the result of the query
@@ -98,75 +174,11 @@ public class InventoryProvider extends ContentProvider {
         // Set notification URI on the Cursor,
         // so we know what content URI the Cursor was created for.
         // If the data at this URI changes, then we know we need to update the Cursor.
+        //
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
 
         // Return the cursor
         return cursor;
-    }
-
-    @Override
-    public Uri insert(Uri uri, ContentValues contentValues) {
-        final int match = sUriMatcher.match(uri);
-        switch (match) {
-            case SHOES:
-                return insertInventory(uri, contentValues);
-            default:
-                throw new IllegalArgumentException("Insertion is not supported for " + uri);
-        }
-    }
-
-    /**
-     * Insert a pair of shoes into the database with the given content values. Return the new content URI
-     * for that specific row in the database.
-     */
-    private Uri insertInventory(Uri uri, ContentValues values) {
-
-        // Check that the name is not null
-        String name = values.getAsString(InventoryEntry.COLUMN_SHOES_NAME);
-        if (name == null) {
-            throw new IllegalArgumentException("Shoe name must be specified");
-        }
-
-        // Check that the brand is not null
-        String brand = values.getAsString(InventoryEntry.COLUMN_SHOES_BRAND);
-        if (brand == null) {
-            throw new IllegalArgumentException("Shoe brand must be specified");
-        }
-
-        // Check that the price is not null
-        String price = values.getAsString(InventoryEntry.COLUMN_SHOES_PRICE);
-        if (price == null) {
-            throw new IllegalArgumentException("Please specify the price");
-        }
-
-        // Check that the shoe size is valid
-        Integer size = values.getAsInteger(InventoryEntry.COLUMN_SHOES_SIZE);
-        if (size == null || !InventoryEntry.isValidSize(size)) {
-            throw new IllegalArgumentException("Please enter a size between 5 and 12");
-        }
-
-        // If quantity is provided, check that it's equal to at least 1
-        Integer quantity = values.getAsInteger(InventoryEntry.COLUMN_SHOES_QUANTITY);
-        if (quantity != null && quantity < 0) {
-            throw new IllegalArgumentException("Please specify the quantity");
-        }
-
-        // Get writable database
-        SQLiteDatabase database = mDbHelper.getWritableDatabase();
-
-        // Insert the new inventory with the given values
-        long id = database.insert(InventoryEntry.TABLE_NAME, null, values);
-        // If the ID is -1, then the insertion failed. Log an error and return null.
-        if (id == -1) {
-            Log.e(LOG_TAG, "Failed to insert row for " + uri);
-            return null;
-        }
-
-        // Notify all listeners that the data has changed for the inventory content URI
-        getContext().getContentResolver().notifyChange(uri, null);
-
-        // Return the new URI with the ID (of the newly inserted row) appended at the end
-        return ContentUris.withAppendedId(uri, id);
     }
 
     @Override
@@ -193,47 +205,58 @@ public class InventoryProvider extends ContentProvider {
      * specified in the selection and selection arguments (which could be 0 or 1 or more pets).
      * Return the number of rows that were successfully updated.
      */
-    private int updateInventory(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-
-        if (values.containsKey(InventoryEntry.COLUMN_SHOES_NAME)) {
+    private int updateInventory(Uri uri, ContentValues values, String selection, String[] selectionArgs)
+    {
+        if (values.containsKey(InventoryEntry.COLUMN_SHOES_NAME))
+        {
             String style = values.getAsString(InventoryEntry.COLUMN_SHOES_NAME);
-            if (style == null) {
+            if (style == null)
+            {
                 throw new IllegalArgumentException("Please specify the shoe name");
             }
         }
 
-        if (values.containsKey(InventoryEntry.COLUMN_SHOES_BRAND)) {
+        if (values.containsKey(InventoryEntry.COLUMN_SHOES_BRAND))
+        {
             String brand = values.getAsString(InventoryEntry.COLUMN_SHOES_BRAND);
-            if (brand == null) {
+            if (brand == null)
+            {
                 throw new IllegalArgumentException("Please specify the brand");
             }
         }
 
-        if (values.containsKey(InventoryEntry.COLUMN_SHOES_PRICE)) {
+        if (values.containsKey(InventoryEntry.COLUMN_SHOES_PRICE))
+        {
             String price = values.getAsString(InventoryEntry.COLUMN_SHOES_PRICE);
-            if (price == null) {
+            if (price == null)
+            {
                 throw new IllegalArgumentException("Please specify the price");
             }
         }
 
-        if (values.containsKey(InventoryEntry.COLUMN_SHOES_QUANTITY)) {
+        if (values.containsKey(InventoryEntry.COLUMN_SHOES_QUANTITY))
+        {
             Integer quantity = values.getAsInteger(InventoryEntry.COLUMN_SHOES_QUANTITY);
-            if (quantity == null) {
+            if (quantity == null)
+            {
                 throw new IllegalArgumentException("Please specify the quantity");
             }
         }
 
         // If the {@link InventoryEntry#COLUMN_SHOES_SIZE} key is present,
         // check that the size value is valid.
-        if (values.containsKey(InventoryEntry.COLUMN_SHOES_SIZE)) {
+        if (values.containsKey(InventoryEntry.COLUMN_SHOES_SIZE))
+        {
             Integer size = values.getAsInteger(InventoryEntry.COLUMN_SHOES_SIZE);
-            if (size == null || !InventoryEntry.isValidSize(size)) {
+            if (size == null || !InventoryEntry.isValidSize(size))
+            {
                 throw new IllegalArgumentException("Please enter a valid size");
             }
         }
 
         // If there are no values to update, then don't try to update the database
-        if (values.size() == 0) {
+        if (values.size() == 0)
+        {
             return 0;
         }
 
@@ -245,7 +268,8 @@ public class InventoryProvider extends ContentProvider {
 
         // If 1 or more rows were updated, then notify all listeners that the data at the
         // given URI has changed
-        if (rowsUpdated != 0) {
+        if (rowsUpdated != 0)
+        {
             getContext().getContentResolver().notifyChange(uri, null);
         }
 
@@ -253,10 +277,11 @@ public class InventoryProvider extends ContentProvider {
         return rowsUpdated;
     }
 
+    // Implement delete to delete a single row of data
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
 
-        // Get writable database
+        // Get a writable database
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
         // Track the number of rows that were deleted
@@ -280,7 +305,8 @@ public class InventoryProvider extends ContentProvider {
 
         // If 1 or more rows were deleted, then notify all listeners that the data at the
         // given URI has changed
-        if (rowsDeleted != 0) {
+        if (rowsDeleted != 0)
+        {
             getContext().getContentResolver().notifyChange(uri, null);
         }
 
@@ -289,7 +315,8 @@ public class InventoryProvider extends ContentProvider {
     }
 
     @Override
-    public String getType(Uri uri) {
+    public String getType(Uri uri)
+    {
         final int match = sUriMatcher.match(uri);
         switch (match) {
             case SHOES:
